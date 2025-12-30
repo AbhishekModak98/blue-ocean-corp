@@ -32,7 +32,8 @@ export class CategoryService {
                     .find(condition)
                     .sort({ createdAt: -1 })
                     .skip(skip)
-                    .limit(Number(limit)),
+                    .limit(Number(limit))
+                    .lean(),
                 this.categoryModel.countDocuments(condition)
             ]);
 
