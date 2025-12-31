@@ -9,7 +9,7 @@ import mongoose from 'mongoose';
 export class CategoryService {
     constructor(
         @InjectModel('category') private readonly categoryModel,
-    ) {}
+    ) { }
 
     async createCategory(createDto: CreateCategoryDto) {
         try {
@@ -20,7 +20,7 @@ export class CategoryService {
         }
     }
 
-    async findAll(page: string = "1", limit: string = "10", name: string ) {
+    async findAll(page: string = "1", limit: string = "10", name: string) {
         try {
             let condition = { isDeleted: false };
             if (name) condition['name'] = { $regex: name, $options: 'i' };
@@ -111,7 +111,7 @@ export class CategoryService {
                 { $match: { isDeleted: false } },
                 {
                     $lookup: {
-                        from: 'subcategory',
+                        from: 'subcategories',
                         localField: '_id',
                         foreignField: 'categoryId',
                         as: 'subcategories'
