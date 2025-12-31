@@ -39,4 +39,9 @@ export class CategoryController {
   async softDelete(@Param('id') id: string) {
     return await this.categoryService.softDelete(id);
   }
+
+  @Get('sub-category-count')
+  async subCategoryCount() {
+    return await this.categoryService.categorySubcategoryCount();
+  }
 }

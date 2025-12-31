@@ -104,4 +104,43 @@ export class CategoryService {
             return { statusCode: 500, message: error?.message || 'Internal server error' };
         }
     }
+
+    async categorySubcategoryCount() {
+        try {
+            const result = await this.categoryModel.aggregate([
+                { $match: { isDeleted: false } },
+                {
+                    $lookup: {
+                        from: 'subcategory',
+                        localField: '_id',
+                        foreignField: 'categoryId',
+                        as: 'subcategories'
+                    },
+                },
+                {
+                    $addFields: {
+                        subCategoryCount: {
+                            $size: {
+                                $filter: {
+                                    input: '$subcategories',
+                                    as: 'subcat',
+                                    cond: { $eq: ['$$subcat.isDeleted', false] }
+                                },
+                            },
+                        },
+                    },
+                },
+                {
+                    $project: {
+                        name: 1,
+                        subCategoryCount: 1
+                    },
+                },
+            ]);
+
+            return { statusCode: 200, message: 'Category subcategory count fetched!', data: result };
+        } catch (error) {
+            return { statusCode: 500, message: error?.message || 'Internal server error' };
+        }
+    }
 }
