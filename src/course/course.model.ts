@@ -5,5 +5,5 @@ export const CourseSchema = new mongoose.Schema({
     description: { type: String },
     categoryIds: { type: [mongoose.Types.ObjectId], ref: 'category' },
     subCategoryIds: { type: [mongoose.Types.ObjectId], ref: 'subcategory' },
-    isDeleted: { type: Boolean }
+    isDeleted: { type: Boolean, default: false }
 }, { timestamps: true });
