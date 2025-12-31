@@ -9,7 +9,7 @@ export class SubCategoryController {
   constructor(private readonly subCategoryService: SubCategoryService) {}
 
   @Post('create-sub-category')
-  async createSubCategory(createDto: CreateSubCategoryDto) {
+  async createSubCategory(@Body() createDto: CreateSubCategoryDto) {
     return await this.subCategoryService.createSubCategory(createDto);
   }
 
