@@ -14,52 +14,126 @@ export class CourseService {
         @InjectModel('subcategory') private readonly subCategoryModel,
     ) { }
 
+    // async createCourse(createDto: CreateCourseDto) {
+    //     const session = await mongoose.startSession();
+    //     session.startTransaction();
+
+    //     try {
+    //         const categoryIds = createDto?.categoryIds?.map(
+    //             (id) => new mongoose.Types.ObjectId(id)
+    //         );
+
+    //         const categories = await this.categoryModel
+    //             .find({
+    //                 _id: { $in: categoryIds },
+    //                 isDeleted: false,
+    //             })
+    //             .session(session)
+    //             .lean();
+
+    //         if (
+    //             !categories?.length ||
+    //             categories.length !== createDto.categoryIds.length
+    //         ) {
+    //             await session.abortTransaction();
+    //             return { statusCode: 400, message: 'Invalid categories selected' };
+    //         }
+
+    //         const subCategoryIds = createDto?.subCategoryIds?.map(
+    //             (id) => new mongoose.Types.ObjectId(id),
+    //         );
+
+    //         const subCategories = await this.subCategoryModel
+    //             .find({
+    //                 _id: { $in: subCategoryIds },
+    //                 isDeleted: false,
+    //             })
+    //             .session(session)
+    //             .lean();
+
+    //         if (
+    //             !subCategories?.length ||
+    //             subCategories.length !== createDto.subCategoryIds.length
+    //         ) {
+    //             await session.abortTransaction();
+    //             return {
+    //                 statusCode: 400,
+    //                 message: 'Invalid sub categories selected',
+    //             };
+    //         }
+
+    //         const categoryIdSet = new Set(
+    //             createDto.categoryIds.map((id) => id.toString()),
+    //         );
+
+    //         for (const subCat of subCategories) {
+    //             if (!categoryIdSet.has(subCat.categoryId.toString())) {
+    //                 await session.abortTransaction();
+    //                 return {
+    //                     statusCode: 400,
+    //                     message:
+    //                         'Sub category does not belong to selected categories',
+    //                 };
+    //             }
+    //         }
+
+    //         const course = await this.courseModel.create(
+    //             [
+    //                 {
+    //                     title: createDto.title,
+    //                     description: createDto.description,
+    //                     categoryIds,
+    //                     subCategoryIds,
+    //                 },
+    //             ],
+    //             { session },
+    //         );
+
+    //         await session.commitTransaction();
+    //         session.endSession();
+
+    //         return {
+    //             statusCode: 200,
+    //             message: 'Course created',
+    //             data: course[0],
+    //         };
+    //     } catch (error) {
+    //         await session.abortTransaction();
+    //         session.endSession();
+
+    //         return {
+    //             statusCode: 500,
+    //             message: error?.message || 'Internal server error',
+    //         };
+    //     }
+    // }
+
     async createCourse(createDto: CreateCourseDto) {
         try {
             const categoryIds = createDto?.categoryIds?.map((id) => {
                 return new mongoose.Types.ObjectId(id);
             });
-
-            const categories = await this.categoryModel
-                .find({
-                    _id: { $in: categoryIds },
-                    isDeleted: false,
-                })
-                .lean();
-
-            if (
-                !categories?.length ||
-                categories?.length !== createDto?.categoryIds?.length
-            ) {
-                return { statusCode: 400, message: 'Invalid categories selected' };
+            const categories = await this.categoryModel.find({
+                _id: { $in: categoryIds }, isDeleted: false
+            }).lean();
+            if (!categories?.length || categories?.length !== createDto?.categoryIds?.length) {
+                return { statusCode: 400, message: 'Invalid categories selected' }
             }
 
             const subCategoryIds = createDto?.subCategoryIds?.map((id) => {
                 return new mongoose.Types.ObjectId(id);
             });
-
-            const subCategories = await this.subCategoryModel
-                .find({
-                    _id: { $in: subCategoryIds },
-                    isDeleted: false,
-                })
-                .lean();
-
-            if (
-                !subCategories?.length ||
-                subCategories?.length !== createDto?.subCategoryIds?.length
-            ) {
+            const subCategories = await this.subCategoryModel.find({
+                _id: { $in: subCategoryIds }, isDeleted: false
+            }).lean();
+            if (!subCategories?.length || subCategories?.length !== createDto?.subCategoryIds?.length) {
                 return { statusCode: 400, message: 'Invalid sub categories selected' };
             }
 
             const categoryIdSet = new Set(createDto?.categoryIds?.map(String));
-
             for (const subCat of subCategories) {
                 if (!categoryIdSet?.has(subCat?.categoryId?.toString())) {
-                    return {
-                        statusCode: 400,
-                        message: 'Sub category does not belong to selected categories',
-                    };
+                    return { statusCode: 400, message: 'Sub category does not belong to selected categories' };
                 }
             }
 
@@ -67,15 +141,12 @@ export class CourseService {
                 title: createDto?.title,
                 description: createDto?.description,
                 categoryIds,
-                subCategoryIds,
+                subCategoryIds
             });
 
-            return { statusCode: 200, message: 'Course created', data: course };
+            return { statusCode: 200, message: 'Course created', data: course }
         } catch (error) {
-            return {
-                statusCode: 500,
-                message: error?.message || 'Internal server error',
-            };
+            return { statusCode: 500, message: error?.message || 'Internal server error' }
         }
     }
 
