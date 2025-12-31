@@ -18,6 +18,8 @@
 - Soft delete
 - MongoDB aggregation
 - Transaction for Course creation
+  - Because my system has stand alone mongoDB connection, transactions are not supported
+  - Tried fixing those connections but was taking longer than expected
 
 ### Setup
 
