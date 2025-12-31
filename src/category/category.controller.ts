@@ -15,9 +15,9 @@ export class CategoryController {
 
   @Get('category-list')
   async findAll(
-    @Query() page: string,
-    @Query() limit: string,
-    @Query() name: string
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+    @Query('name') name: string
   ) {
     return await this.categoryService.findAll(page, limit, name);
   }
